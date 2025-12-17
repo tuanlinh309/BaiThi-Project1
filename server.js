@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
       <body style="text-align: center; padding-top: 50px;">
         <h1 style="color: blue;">Xin chào! Đây là Project 1</h1>
         <p>Phiên bản: V1 - Chạy trên Render</p>
-        <p>Người thực hiện: [Tên Của Bạn]</p>
+        <p>Người thực hiện: Nguyễn Phan Tuấn Linh</p>
       </body>
     </html>
   `);
