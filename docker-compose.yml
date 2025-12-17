@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # Đặt tên dịch vụ
+  app-backend:
+    # Build từ thư mục hiện tại (.)
+    build: .
+    # Đặt tên cho container để dễ tìm
+    container_name: tuanlinh-project1-docker
+    # Chuyển cổng: Cổng 3000 máy thật nối vào 3000 container
+    ports:
+      - "3000:3000"
+    # Cấu hình biến môi trường (Để kết nối Database)
+    environment:
+      - MONGO_URI=mongodb+srv://tuanlinh:tuanlinh123@cluster0.ikuxhej.mongodb.net/?appName=Cluster0
+      - PORT=3000
+    # Tự khởi động lại nếu app bị lỗi
+    restart: always
