@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Sinh Viên Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎓 HỆ THỐNG QUẢN LÝ SINH VIÊN</h1>
+        <p class="subtitle">Kết nối MongoDB Atlas Real-time</p>
+
+        <div class="form-card">
+            <h3>✨ Thêm Sinh Viên Mới</h3>
+            <div class="input-group">
+                <input type="text" id="ten" placeholder="Họ và Tên" required>
+                <input type="text" id="mssv" placeholder="Mã Số SV" required>
+                <input type="text" id="lop" placeholder="Lớp" required>
+            </div>
+            <button onclick="themSinhVien()" class="btn-add">
+                <i class="fa-solid fa-plus"></i> Lưu vào Database
+            </button>
+        </div>
+
+        <div id="loading">Đang tải dữ liệu...</div>
+        <div id="student-list" class="grid-container"></div>
+    </div>
+
+    <script>
+        const API_URL = '/api/sinhvien';
+
+        // 1. Lấy danh sách
+        async function loadData() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            
+            const listDiv = document.getElementById('student-list');
+            document.getElementById('loading').style.display = 'none';
+            listDiv.innerHTML = ''; // Xóa cũ đi render lại
+
+            data.forEach(sv => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="avatar">${sv.ten.charAt(0)}</div>
+                        <button onclick="xoaSinhVien('${sv._id}')" class="btn-delete" title="Xóa">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3>${sv.ten}</h3>
+                    <div class="info">
+                        <p><i class="fa-solid fa-id-card"></i> ${sv.mssv}</p>
+                        <p><i class="fa-solid fa-graduation-cap"></i> ${sv.lop}</p>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+            });
+        }
+
+        // 2. Thêm sinh viên
+        async function themSinhVien() {
+            const ten = document.getElementById('ten').value;
+            const mssv = document.getElementById('mssv').value;
+            const lop = document.getElementById('lop').value;
+
+            if(!ten || !mssv) return alert("Vui lòng nhập đủ thông tin!");
+
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ten, mssv, lop })
+            });
+
+            if(res.ok) {
+                // Xóa trắng ô nhập
+                document.getElementById('ten').value = '';
+                document.getElementById('mssv').value = '';
+                document.getElementById('lop').value = '';
+                loadData(); // Tải lại danh sách
+            } else {
+                alert("Lỗi khi thêm!");
+            }
+        }
+
+        // 3. Xóa sinh viên
+        async function xoaSinhVien(id) {
+            if(confirm("Bạn có chắc muốn xóa sinh viên này khỏi Database thật không?")) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                loadData();
+            }
+        }
+
+        loadData();
+    </script>
+
+</body>
+</html>
