@@ -1,4 +1,4 @@
-name: Tu dong Deploy
+name: Deploy va Ghi Lich Su
 
 on:
   push:
@@ -9,5 +9,25 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # Bước 1: Lấy code về (để đọc thông tin commit)
+      - name: Lay source code
+        uses: actions/checkout@v3
+
+      # Bước 2: In thông tin chi tiết ra màn hình (Ghi lịch sử)
+      - name: Ghi Nhat Ky Deploy
+        run: |
+          echo "--------------------------------------"
+          echo "🕒 Thoi gian: $(date)"
+          echo "👤 Nguoi thuc hien: ${{ github.actor }}"
+          echo "📝 Noi dung commit: ${{ github.event.head_commit.message }}"
+          echo "🔗 Commit ID: ${{ github.sha }}"
+          echo "--------------------------------------"
+
+      # Bước 3: Gửi lệnh sang Render
       - name: Kich hoat Render Deploy
         run: curl -X POST ${{ secrets.RENDER_HOOK }}
+
+      # Bước 4: Báo kết quả cuối cùng
+      - name: Trang thai
+        if: success()
+        run: echo "✅ Đã gửi lệnh deploy thành công tới Render!"
